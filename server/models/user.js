@@ -3,41 +3,45 @@ const jwt = require('jsonwebtoken');
 
 const userSchema = new mongoose.Schema({
     name: {
-        type: String(),
+        type: String,
         required: true,
-        minlength: 3,
-        maxlength: 50
+        minLength: 3,
+        maxLength: 50
     },
     email: {
-        type: String(),
+        type: String,
         required: true,
-        minlength: 5,
-        maxlength: 255,
+        minLength: 5,
+        maxLength: 255,
         unique: true
     },
     password: {
-        type: String(),
+        type: String,
         required: true,
-        minlength: 5,
-        maxlength: 1024
+        minLength: 5,
+        maxLength: 1024
     },
     status: {
-        type: String(),
+        type: String,
         enum: ['Active', 'Blocked'],
         default: 'Active',
         required: true
     },
     isAdmin: {
-        type: Boolean(),
+        type: Boolean,
         default: false,
         required: true
     }
 });
 
-userSchema.methods.generateAuthToken = function(){
-const token =jwt.sign({_id: this._id,status:this.status,isAdmin:this.isAdmin},process.env.JWTPRIVATEKEY);
-return token;
+userSchema.methods.generateAuthToken = function () {
+    const token = jwt.sign({
+        _id: this._id,
+        status: this.status,
+        isAdmin: this.isAdmin
+    }, process.env.JWTPRIVATEKEY);
+    return token;
 }
 
-const User = mongoose.Model('User', userSchema);
+const User = mongoose.model('User', userSchema);
 exports.User = User;

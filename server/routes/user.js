@@ -1,8 +1,8 @@
 const { User } = require('../models/user');
-const mongoose = require('mongoose');
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
+const auth = require('../middleware/auth');
 
 router.get('/', auth, async (req, res) => {
     const users = await User.find().select('-password');
@@ -13,7 +13,7 @@ router.get('/', auth, async (req, res) => {
     res.send(users);
 });
 
-router.post('/:id', async (req, res) => {
+router.post('/', async (req, res) => {
     let user = await User.findOne({ email: req.body.email });
     if (user) {
         return res.status(400).send('This email already exist');
@@ -32,10 +32,10 @@ router.post('/:id', async (req, res) => {
     await user.save();
     const token = user.generateAuthToken();
     res.header('x-auth-token', token).send({
-        user.name,
-        user.email,
-        user.status,
-        user.isAdmin
+        name: user.name,
+        email: user.email,
+        status: user.status,
+        isAdmin: user.isAdmin
     });
 })
 
@@ -47,10 +47,10 @@ router.patch('/:id', auth, async (req, res) => {
 
     const token = user.generateAuthToken();
     res.header('x-auth-token', token).send({
-        user.name,
-        user.email,
-        user.status,
-        user.isAdmin
+        name: user.name,
+        email: user.email,
+        status: user.status,
+        isAdmin: user.isAdmin
     });
 });
 
@@ -60,4 +60,6 @@ router.delete('/:id', auth, async (req, res) => {
         return res.status(400).send('No such user');
     }
     res.send(user);
-})
+});
+
+module.exports = router;
